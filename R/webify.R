@@ -1,5 +1,6 @@
 webify <- function(league, season = 2017) {
-    outfile <- paste0("../../_includes/leagues/", league, ".html")
+    outfile <- paste0("../../_includes/leagues/", league,
+                      "/alt3-table.html")
     league_table <- read.csv(paste0(league, "/", season, "/alt3.csv"))
     nplayed <- max(league_table $ Pld)
     require(huxtable)
@@ -13,14 +14,14 @@ webify <- function(league, season = 2017) {
     })
     league_table <- cbind(league_table[, 1:6], league_table[, 10], league_table[, 7:9])
     ht <- add_colnames(as_hux(league_table))
+    number_format(ht)[1,10] <- '%2.0f'
     names(ht)[1] <- "team"
     ht[1,1] <- ht[1,2] <- ht[1,6] <- ht[1,7] <- ht[1, 8] <- ""
-    ht[1, 3] <- "P"
-    ht[1, 10] <- gsub("\\.", "|", ht[1, 10])
-
+    ht[1, 3] <- "Pld"
+    ht[1, 10] <- gsub("\\.", "|", colnames(ht)[10])
     ht$sched <- gsub("-", "minus", ht$sched)
     ht$GD <- gsub("-", "minus", ht$GD)
-    team_urls <- paste0("/leagues/", league, "/", "/schedule-strength-",
+    team_urls <- paste0("/leagues/", league, "/", "schedule-strength-",
                         ht$team[2:nrow(ht)])
     for (i in 2:nrow(ht)) {
         ht$team[i] <- gsub("^", paste0('opena', team_urls[i - 1],
@@ -32,79 +33,110 @@ webify <- function(league, season = 2017) {
                                         'closetag'), ht$longnames[i])
         ht$longnames[i] <- gsub("$", "closea", ht$longnames[i])
         }
-    for (i in 2:nrow(ht)) {
+    if (FALSE) {for (i in 2:nrow(ht)) {
         ht$sched[i] <- gsub("^", paste0('opena', team_urls[i - 1],
                                         'closetag'), ht$sched[i])
         ht$sched[i] <- gsub("$", "closea", ht$sched[i])
         }
+    }
     bold(ht)[1,]           <- TRUE
-    bold(ht[1, 9]) <- FALSE
+    bold(ht)[1, 4:6] <- FALSE
     bold(ht)[, 1:2]           <- TRUE
     bold(ht)[, 8]           <- TRUE
     bold(ht)[, 10]           <- TRUE
     bottom_border(ht)[1, ] <- FALSE
-    align(ht)[, 3:10]       <- 'right'
+    align(ht)[, 3] <- 'center'
+    align(ht)[, 4:10]       <- 'right'
     align(ht)[, 6:8]       <- 'center'
     right_padding(ht)      <- 2
     left_padding(ht)       <- 2
     right_padding(ht)[, 5] <- 10
     right_padding(ht)[, 10] <- 3
     left_padding(ht)[, 10] <- 4
-    right_padding(ht)[, 8] <- 0
     right_padding(ht)[, 1] <- 4
     right_padding(ht)[, 2] <- 4
-    left_padding(ht)[, 1] <- 2
+    left_padding(ht)[, 1] <- 3
     left_padding(ht)[, 2] <- 4
     left_padding(ht)[, 3] <- 2
+    right_padding(ht)[, 3] <- 5
+    left_padding(ht)[, 4] <- 0
     left_padding(ht)[, 9] <- 0
-    left_padding(ht)[, 8] <- 1
-    left_padding(ht)[, 7] <- 3
-    right_padding(ht)[, 6:7] <- 1
-    ht <- set_col_width(ht, 7, "24px")
+    left_padding(ht)[, 7] <- 2
+    right_padding(ht)[, 7] <- 2
+    left_padding(ht)[, 8] <- 4
+    bottom_padding(ht) <- 2
+    top_padding(ht) <- 2
     number_format(ht)[, c(3:6, 8)] <- 0
-    number_format(ht)[, 9:10] <- "%-1.1f"
-    ht <- rbind(c('', '', '', '', '', '', 'alt-3', '', '', ''), ht)
-    colspan(ht)[1, 7] <- 4
-    align(ht)[1, 7] <- 'center'
-    background_color(ht)[, 7:10] <- "lemonchiffon"
+    number_format(ht)[-1, 9:10] <- "%-1.1f"
+    ht <- rbind(c('', '', '', 'standard table', '', '', '', 'alt-3', '', ''), ht)
+    colspan(ht)[1, 4] <- 3
+    align(ht)[1, 4] <- 'center'
+    text_color(ht)[1, 4] <- "#666666"
+    background_color(ht)[1, 4:6] <- "gainsboro"
+    colspan(ht)[1, 8] <- 3
+    align(ht)[1, 8] <- 'center'
+    text_color(ht)[1, 8] <- "#000055"
+    background_color(ht)[1, 8:10] <- "#ffa74d"
+    background_color(ht)[3:22, 7] <- "#000055"
+    ht <- set_col_width(ht, 7, "20px")
     ## some alternatives "#FFD4B8" "powderblue"  "lightcyan"
-    background_color(ht)[2, ] <- "gainsboro"  ## a grey column-header line
-    text_color(ht)[, 6] <- "darkgrey"
-    ht <- set_top_border(ht, 1, 7:10, 4)
+    background_color(ht)[2, ] <- "#000055"  # "gainsboro"  ## a grey column-header line
+    text_color(ht)[2, 3] <- "#ffffff"
+    text_color(ht)[2, 4:5] <- "#aaaaaa"
+    text_color(ht)[2, 9:10] <- "#ffffff"
+    background_color(ht)[3:22, 4:6] <- "gainsboro"
+    text_color(ht)[3:22, 4:6] <- "#666666"
+   # text_color(ht)[, 6] <- "darkgrey"
+#    ht <- set_top_border(ht, 1, 8:10, 4)
+#    ht <- set_top_border_color(ht, 1, 8:10, "#000044")
+#    ht <- set_top_border(ht, 1, 4:6, 4)
+#    ht <- set_top_border_color(ht, 1, 4:6, "lightgrey")
     ht <- set_bottom_border(ht, 22, everywhere, 4)
-    ht <- set_bottom_border_color(ht, 22, everywhere, "lightgrey")
-    width(ht) <- 1.00
-    font_size(ht) <- 11
-    row_height(ht) <- 9
-    ht <- set_bottom_border(ht, c(3:5, 8:18, 20:21), everywhere, 2)
-    ht <- set_bottom_border_color(ht, c(3:5, 8:18, 20:21), everywhere, "gainsboro")
-    ht <- set_bottom_border(ht, c(6:7, 19), everywhere, 2)
-    ht <- set_bottom_border_color(ht, c(6:7, 19), everywhere, "grey")
+    ht <- set_bottom_border_color(ht, 22, c(1:6, 8:10), "lightgrey") #  "#000055"
+    ht <- set_bottom_border_color(ht, 22, 7, "#000055")
+#    width(ht) <- 1.00
+#    font_size(ht) <- 11
+#    row_height(ht) <- 9
+    ht <- set_bottom_border(ht, c(3:21), c(1:6, 8:10), 2)
+    ht <- set_bottom_border_color(ht, c(3:21), 4:6, "#cccccc")
+    ht <- set_bottom_border_color(ht, c(3:21), c(1:3, 8:10), "#ffa74d")
+    ht <- set_bottom_border(ht, 1, everywhere, 2)
+    ht <- set_bottom_border_color(ht, 1, 4:6, "#cccccc")
+    ht <- set_bottom_border_color(ht, 1, 8:10, "#ffa74d")
+    ht <- set_bottom_border_color(ht, 1, c(1:3, 7), "#ffffff")
+#    ht <- set_bottom_border(ht, c(6:7, 19), c(1:6, 8:10), 2)
+#    ht <- set_bottom_border_color(ht, c(6:7, 19), c(1:6, 8:10), "grey")
     timestamp <- paste0('<p style=\"font-size: 80%;\"><i>Table written: ', Sys.time(), " (London time).</i> <br>If this looks out of date, please try refreshing the page in your browser.</p>")
+    ht$V9 <- gsub("minus0.0", "0.0", ht$V9)
     html <- to_html(ht)
     html <- gsub("minus", "&minus;", html)
     html <- gsub("opena", '<a href=\"', html)
     html <- gsub("closetag", '\">', html)
     html <- gsub("closea", "</a>", html)
+    sched_tooltip <- paste0("SCHEDULE STRENGTH\n",
+                       "  + : fixtures to date relatively hard\n",
+                       "  &minus; : fixtures to date relatively easy")
+#    html <- gsub(">sched", paste0(' title="', sched_tooltip, '">sched'), html)
     html <- gsub("up2svg",
-      '<img width=\"11\" src=\"/assets/images/up2.svg\" style=\"margin-bottom: 2px;\">',
+      '<img width=\"12px\" src=\"/assets/images/up2.svg\" style=\"margin-bottom: 2px;\">',
       html)
     html <- gsub("upsvg",
-      '<img width=\"11\" src=\"/assets/images/up.svg\" style=\"margin-bottom: 2px;\">',
+      '<img width=\"12px\" src=\"/assets/images/up.svg\" style=\"margin-bottom: 2px;\">',
       html)
     html <- gsub("down2svg",
-      '<img width=\"11\" src=\"/assets/images/down2.svg\" style=\"margin-bottom: 2px;\">',
+      '<img width=\"12px\" src=\"/assets/images/down2.svg\" style=\"margin-bottom: 2px;\">',
       html)
     html <- gsub("downsvg",
-      '<img width=\"11\" src=\"/assets/images/down.svg\" style=\"margin-bottom: 2px;\">',
+      '<img width=\"12px\" src=\"/assets/images/down.svg\" style=\"margin-bottom: 2px;\">',
       html)
+    html <- gsub("50%", "100%", html)  ## for the table width
     cat(c(html, timestamp), file = outfile)
 
     ##  Now update the key file, too
     tx  <- readLines("key_template.md")
     tx <- gsub(pattern = "thisleague", replace = league, x = tx)
     tx2  <- gsub(pattern = "nplayed", replace = as.character(nplayed), x = tx)
-    writeLines(tx2, con = paste0("../../_includes/leagues/", league, "-key.md"))
+    writeLines(tx2, con = paste0("../../_includes/leagues/", league, "/key.md"))
 
     }
 

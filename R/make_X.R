@@ -11,6 +11,8 @@ alt3 <- function(league, season = 2017, results = "latest.csv",
     if (is.null(draw_par)) draw_par <- leagues[league, "draw_par"]
     if (is.null(home_par)) home_par <- leagues[league, "home_par"]
     if (is.null(prior_weight)) prior_weight <- leagues[league, "prior_weight"]
+    ## Next three lines needed only because of the bug in gnm
+    ## -- but is the prior_weight assignment actually needed?
     draw_par <<- draw_par
     home_par <<- home_par
     prior_weight <<- prior_weight
@@ -67,7 +69,6 @@ alt3 <- function(league, season = 2017, results = "latest.csv",
     }
 
     modelframe$s <- X
-
     model <- gnm::gnm(count ~ -1 + s,
                       offset = draw_par * draw + home_par * home,
                       eliminate = match,
@@ -91,7 +92,8 @@ alt3 <- function(league, season = 2017, results = "latest.csv",
     standard_table <- standard_table[, c(7, 3:6)]
     names(standard_table) <- c("longnames", "Pld", "GD", "Pts", "rank")
     M_max <- max(standard_table $ Pld)
-    aPts <- round(M_max * apm, 8)
+    standard_table <- standard_table[names(apm), ]
+    aPts <- round(M_max * apm, 1)
     ordering <- order(aPts, standard_table$GD, decreasing = TRUE)
     apm <- apm[ordering]
     aPts <- aPts[ordering]
@@ -174,7 +176,9 @@ plot_schedule_strengths <- function(league = "england-premier-league",
     teams <- read.csv(paste(league, season, "namesOfTeams.csv", sep = "/"))
     plot_sched <- function(schedule, team, matches_played) {
         team_fullname <- teams$short_name[teams$abbrev == team]
-        dirname <- paste(league, season, "schedule-strengths/", sep = "/")
+        dirname <- paste("../../_includes/leagues",
+                              league, "schedule-strengths/", sep = "/")
+#        dirname <- paste(league, season, "schedule-strengths/", sep = "/")
 #        png(file = paste0(dirname, team, ".png"), width = 480, height = 950)
         svg(file = paste0(dirname, team, ".svg"), width = 4, height = 10)
         scalemax <- ceiling(max(abs(schedule $ cumulative)))
@@ -257,7 +261,7 @@ make_sched_strength_pages <- function(league, season) {
     tx  <- readLines("schedule_strength_template.md")
     tx <- gsub(pattern = "thisleague", replace = league, x = tx)
     for (i in seq(along = abbrev)) {
-        include.text <- paste0("{% include leagues/MnU.svg %}")
+        include.text <- paste0("{% include leagues/", league, "/schedule-strengths/", abbrev[i], ".svg %}")
         tx2  <- gsub(pattern = "include-svg-file-here", replace = include.text, x = tx)
         tx3  <- gsub(pattern = "shortname", replace = shortname[i], x = tx2)
         tx4  <- gsub(pattern = "abbrev", replace = abbrev[i], x = tx3)

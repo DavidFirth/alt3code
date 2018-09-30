@@ -13,11 +13,12 @@ fetch_league_table <- function(league, season = 2017, matchday = NULL,
 ##  Run this in the "leagues" directory.
     if (!(league %in% list.files())) stop("league folder not found")
     leagues <- read.csv(paste("leagues-", season, ".csv", sep = ""), row.names = 1)
+    n_matchdays <- leagues[league, "n_matchdays"]
     league_id <- leagues[league, "fdo_id"]
     if (!is.null(matchday)) {
         matchday_query <- paste("?matchday=", matchday, sep = "")
         matchday_filename <- paste("leagueTable-", "matchday", matchday, ".json", sep = "")
-        } else matchday_query <- ""
+        } else matchday_query <- paste0("?matchday=", n_matchdays)
     if (!is.null(api_key_file)) {
         api_key <- readLines(api_key_file)
         key_header <- paste("-H 'X-Auth-Token: ", api_key[1], "' ", sep = "")
