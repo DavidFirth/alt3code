@@ -5,11 +5,10 @@
 ##' @param league
 ##' @param season
 ##' @param matchday
-##' @param api_key_file
+##' @param source
 ##' @return
 ##' @author David Firth
-fetch_league_table <- function(league, season = 2020, matchday = NULL,
-                               api_key_file = NULL, source = "BBC"){
+fetch_league_table <- function(league, season, matchday = NULL, source = "BBC"){
     ##  Run this in the "leagues" directory.
     if (!(league %in% list.files())) stop("league folder not found")
     leagues <- read.csv(paste("leagues-", season, ".csv", sep = ""),
@@ -23,10 +22,10 @@ fetch_league_table <- function(league, season = 2020, matchday = NULL,
             matchday_filename <- paste("leagueTable-", "matchday", matchday, ".json",
                                        sep = "")
         } else matchday_query <- paste0("?matchday=", n_matchdays)
-        if (!is.null(api_key_file)) {
-            api_key <- readLines(api_key_file)
-            key_header <- paste("-H 'X-Auth-Token: ", api_key[1], "' ", sep = "")
-        } else key_header <- ""
+
+        api_key <- Sys.getenv("FDO_APIKEY")
+        key_header <- paste("-H 'X-Auth-Token: ", api_key, "' ", sep = "")
+
         url_header <- paste("-X GET http://api.football-data.org/v2/competitions/",
                             league_id, "/standings", matchday_query, sep = "")
         curl_args <- paste("-H 'X-Response-Control: minified' ", key_header,

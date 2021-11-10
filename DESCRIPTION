@@ -1,4 +1,4 @@
-Package: alt3sources
+Package: alt3code
 Title: Packaged R Source Code for Updating the alt-3.uk Website
 Version: 0.0.1
 Authors@R: person("David", "Firth", email = "footymath@alt-3.uk", role = c("aut", "cre"))

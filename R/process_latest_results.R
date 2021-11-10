@@ -9,17 +9,22 @@
 ##' @param keep
 ##' @return
 ##' @author David Firth
-process_latest_results <- function(league, season = 2020,
+process_latest_results <- function(league, season,
                                    json = "latest.json",
                                    csv = "latest.csv",
                                    keep = TRUE) {
     require(jsonlite)
     match_results <- fromJSON(paste(league, "/", season, "/", json,
                                     sep = "")) $ matches
+    match_results <- match_results[(match_results $ status) != "CANCELLED", ]
+    ## not sure how robust the above line will be!
     scores <- match_results $ score $ fullTime
-    finished <- (match_results $ status) == "FINISHED"
+    finished <- (match_results $ status) %in% c("FINISHED", "AWARDED")
+    postponed <- (match_results $ status) == "POSTPONED"
+    cancelled <- (match_results $ status) == "CANCELLED"
     matchday <- match_results $ matchday
     date <- substr(match_results$utcDate, 1, 10)
+    UTCtime <- substr(match_results$utcDate, 12, 19)
     homeTeamName <- match_results $ homeTeam $ name
     homeTeamId <- match_results $ homeTeam $ id
     awayTeamName <- match_results $ awayTeam $ name
@@ -33,7 +38,6 @@ process_latest_results <- function(league, season = 2020,
                               awayTeamId = awayTeamId,
                               FTHG = FTHG,
                               FTAG = FTAG)
-
     spreadsheet <- within(spreadsheet, {
         FTR <- "Z"
         FTR[(FTHG == FTAG) & finished] <- "D"
@@ -43,6 +47,20 @@ process_latest_results <- function(league, season = 2020,
         FTR <- factor(FTR)
     })
     spreadsheet $ date <-  date
+    spreadsheet $ UTCtime <- UTCtime
+    spreadsheet $ status <- match_results $ status
+## Next few lines move unscheduled postponements to the bottom of the sheet
+    n_rows <- nrow(spreadsheet)
+    match_result_rows <- which(!is.na(spreadsheet $ FTR))
+    last_match_result_row <- match_result_rows[length(match_result_rows)]
+    unscheduled_postponements <- postponed[1:last_match_result_row]
+    if (any(unscheduled_postponements)) {
+        unscheduled_postponements <- which(unscheduled_postponements)
+        results_and_scheduled <- (1:n_rows)[-unscheduled_postponements]
+        spreadsheet <- spreadsheet[c(results_and_scheduled, unscheduled_postponements), ]
+        row.names(spreadsheet) <- 1:n_rows
+    }
+## Write the spreadsheet to disk
     write.csv(spreadsheet, paste(league, "/", season, "/", csv, sep = ""),
               row.names = FALSE)
     file_path <- NULL

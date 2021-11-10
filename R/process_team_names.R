@@ -9,7 +9,7 @@
 ##' @param keep
 ##' @return
 ##' @author David Firth
-process_team_names <- function(league, season = 2020,
+process_team_names <- function(league, season,
                                    json = "teams.json",
                                    csv = "teams.csv")
 {
@@ -21,7 +21,8 @@ process_team_names <- function(league, season = 2020,
                               short_name = teams$shortName,
                               abbrev = teams$tla,
                               sky_name = NA,
-                              BBC_name = NA)
+                              BBC_name = NA,
+                              deduction = 0)
     write.csv(spreadsheet, paste(league, "/", season, "/", csv, sep = ""),
               row.names = FALSE)
     invisible(spreadsheet)

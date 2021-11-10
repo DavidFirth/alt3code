@@ -1,89 +1,115 @@
-alt3 <- function(league, season, results = "latest.csv",
-                            draw_par = NULL,
-                            home_par = NULL,
-                            prior_weight = NULL,
-                            outfile = NULL) {
+alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
+                 outfile = NULL, check_table = TRUE) {
 
     leagues <- read.csv(paste("leagues-", season, ".csv", sep = ""),
                         row.names = 1)
-
-    ##  Need to avoid the double-assign here by fixing gnm!
-    if (is.null(draw_par)) draw_par <- leagues[league, "draw_par"]
-    if (is.null(home_par)) home_par <- leagues[league, "home_par"]
-    if (is.null(prior_weight)) prior_weight <- leagues[league, "prior_weight"]
-    ## Next three lines needed only because of the bug in gnm
-    ## -- but is the prior_weight assignment actually needed?
-    draw_par <<- draw_par
-    home_par <<- home_par
-    prior_weight <<- prior_weight
-
-    prior_data <- make_prior_data(league, season, prior_weight)
-
     dirname <- paste0(league, "/", season, "/")
     results <- read.csv(paste0(dirname, results), as.is = TRUE)
-
+    not_in_play <- !(results$status %in% c("IN_PLAY", "PAUSED"))
     teamNames <- read.csv(paste0(league, "/", season, "/", "namesOfTeams.csv"),
                           as.is = TRUE)
     nTeams <- nrow(teamNames)
+    nWeeks <- 2 * (nTeams - 1)
     row.names(teamNames) <- teamNames$"fdo_id"
+    deduction <- teamNames $ deduction
+    names(deduction) <- teamNames $ abbrev
     teamId <- teamNames $ "fdo_id"
     longNames <- teamNames $ short_name
     teamNames <- teamNames $ abbrev
     names(teamNames) <- names(longNames) <- teamId
 
+    prior_data <- make_prior_data(league, season, prior_weight)
+
     results $ homeTeam <- teamNames[as.character(results $ homeTeamId)]
     results $ awayTeam <- teamNames[as.character(results $ awayTeamId)]
-
-    results <- results[, c("matchday", "homeTeam", "awayTeam", "FTR")]
+    results <- results[, c("matchday", "homeTeam", "awayTeam", "FTHG", "FTAG", "FTR")]
     results $ unplayed <- is.na(results $ FTR)
     results <- cbind(sprintf("%03d", as.numeric(row.names(results))),
                              results)
     names(results)[1] <- "match"
+    results$FTR <- factor(results$FTR, levels = c("A", "D", "H"))
 
     modelframe <- gnm::expandCategorical(results, "FTR", idvar = "match")
+    modelframe $ FTHG <- modelframe $ FTAG <- NULL
     is.na(modelframe[modelframe $ unplayed, "count"]) <- TRUE
     played <- !(modelframe $ unplayed)
     modelframe $ unplayed <- NULL
-    FTR <- modelframe $ FTR
-    homeTeam <- modelframe $ homeTeam
-    awayTeam <- modelframe $ awayTeam
 
-    modelframe$draw <- as.numeric(FTR == "D")
-    modelframe$home <- ((FTR == "H") - (FTR == "A"))/2
+    modelframe$draw <- as.numeric(modelframe$FTR == "D")
+    modelframe$home <- ((modelframe$FTR == "H") - (modelframe$FTR == "A"))/2
+    modelframe <- rbind(prior_data, modelframe)
+    modelframe$match <- factor(modelframe$match)
 
-#    modelframe <- rbind(prior_data, modelframe)
+    X <- matrix(0, nrow(modelframe), 2 * nTeams)
+    colnames(X) <- paste0(teamNames, c(rep("_home", nTeams), rep("_away", nTeams)))
 
-    FTR <- modelframe $ FTR
-    homeTeam <- modelframe $ homeTeam
-    awayTeam <- modelframe $ awayTeam
-
-    X <- matrix(0, nrow(modelframe), nTeams)
-    colnames(X) <- teamNames
 
     for (team in teamNames) {
-        X[homeTeam == team & FTR == "H", team] <- 1
-        X[homeTeam == team & FTR == "D", team] <- 1/3
-        X[awayTeam == team & FTR == "A", team] <- 1
-        X[awayTeam == team & FTR == "D", team] <- 1/3
+        X[modelframe$homeTeam == team & modelframe$FTR == "H", paste0(team, "_home")] <- 1
+        X[modelframe$homeTeam == team & modelframe$FTR == "D", paste0(team, "_home")] <- 1/3
+        X[modelframe$awayTeam == team & modelframe$FTR == "A", paste0(team, "_away")] <- 1
+        X[modelframe$awayTeam == team & modelframe$FTR == "D", paste0(team, "_away")] <- 1/3
     }
 
     modelframe$s <- X
-    model <- gnm::gnm(count ~ -1 + s,
-                      offset = draw_par * draw + home_par * home,
+    model <- gnm::gnm(count ~ -1 + s + draw,
                       eliminate = match,
-                      family = poisson,
+                      family = quasipoisson,
                       data = modelframe)
-    names(model$coefficients) <- teamNames
-#    list(whole_season = modelframe, model = model)
-#    list(results = results[!(results$unplayed), ], model = model)
+    names(model$coefficients) <- c(colnames(X), "draw")
+    coefs <- coef(model)
+    delta <- exp(coefs["draw"])
+    strengths <- matrix(exp(coefs[1:(2 * nTeams)]), nTeams, 2)
+    rownames(strengths) <- teamNames
+    colnames(strengths) <- c("home", "away")
 
-    strength <- coef(model)
-    apm <- eppm(strength, draw_par, home_par)
-    sched_list<- sched.s(league, season, results, exp(strength), apm,
-                         draw_par, home_par)
-    ordering <- order(strength)
-#    ss <- sched.s(results[!results$unplayed,], s, exp(home_par))
-#    ss <- sapply(ss, function(x) x$sched.s)
+    ## Next part assumes every team has played at least one match at home and away
+    ##
+    sched_list<- sched.s(league, season, results, strengths, delta)
+
+    ePld <- unlist(lapply(sched_list,
+                   function(ss.i) sum((ss.i $ ePts) * (ss.i $ played)) / mean(ss.i $ ePts)
+                   ))
+    Pld <- unlist(lapply(sched_list,
+                  function(ss.i) sum(na.omit(ss.i $ played))
+                  ))
+    Pts <- unlist(lapply(sched_list,
+                  function(ss.i) sum(na.omit(ss.i $ Pts))
+                  ))
+    Pts <- Pts - deduction
+
+    GD <- unlist(lapply(sched_list,
+                  function(ss.i) sum(na.omit(ss.i $ GD))
+                  ))
+
+    alt3_rate <- Pts/ePld
+
+    home_Pts <- unlist(lapply(sched_list,
+                              function(ss.i) sum(na.omit(ss.i[ss.i$HA == "H", ] $ Pts))
+                              ))
+    home_ePld <- unlist(lapply(sched_list,
+                               function(ss.i) {
+        home_rows <- ss.i[ss.i$HA == "H", ]
+        sum((home_rows $ ePts) * (home_rows $ played)) / mean(home_rows $ ePts)
+    }
+    ))
+    home_rate <- home_Pts / home_ePld
+
+    away_Pts <- unlist(lapply(sched_list,
+                  function(ss.i) sum(na.omit(ss.i[ss.i$HA == "A", ] $ Pts))
+                  ))
+    away_ePld <- unlist(lapply(sched_list,
+                               function(ss.i) {
+        away_rows <- ss.i[ss.i$HA == "A", ]
+        sum((away_rows $ ePts) * (away_rows $ played)) / mean(away_rows $ ePts)
+    }
+    ))
+    away_rate <- away_Pts / away_ePld
+
+    rates <- data.frame(away_rate, home_rate, alt3_rate)
+
+    alt3_rate <- round(alt3_rate, 2)
+    ePld <- round(ePld, 1)
 
     standard_table <- read.csv(paste0(dirname, "leagueTable.csv"), as.is = TRUE)
     row.names(standard_table) <- teamNames[as.character(standard_table$teamId)]
@@ -91,21 +117,34 @@ alt3 <- function(league, season, results = "latest.csv",
     standard_table $ long_names <- longNames
     standard_table <- standard_table[, c(7, 3:6)]
     names(standard_table) <- c("longnames", "Pld", "GD", "Pts", "rank")
-#    standard_table $ rate <- (standard_table $ Pts) / (standard_table $ Pld)
-#    standard_table $ rate <- round(standard_table $ rate, 2)
-    M_max <- max(standard_table $ Pld)
-    standard_table <- standard_table[names(apm), ]
-    aPts <- round(M_max * apm, 1)
-    ePld <- round(standard_table$Pts / apm, 1)
-    apm <- round(apm, 2)
-    ordering <- order(apm, standard_table $ Pts, standard_table $ GD,
+    standard_table <- standard_table[names(alt3_rate), ]
+    if (check_table) {
+        if (all(not_in_play)){ # so current BBC table should agree with Pts and GD
+            if (any(Pts != standard_table$Pts)) {
+                notify_me(league,
+                          ":large_red_square: Points differ from official table: stopping")
+                stop("Points totals differ!")
+            }
+            if (any(GD != standard_table$GD)) {
+                notify_me(league,
+                          ":large_red_square: GD differs from official table: continuing")
+                                        # stop("Goal differences differ!")
+                                        #
+                                        # previous line commented because it's unclear
+                                        # what to do about incorrect BBC table
+            }
+        } else { ## at least one match is still in play
+            notify_me(league, ":large_red_square: Still in play: stopping")
+            stop("At least one match is still in play")
+        }
+    }
+    if (all(ePld == Pld)) ordering <- order(standard_table$rank)
+    else ordering <- order(alt3_rate, standard_table $ Pts, standard_table $ GD,
                       decreasing = TRUE)
-    apm <- apm[ordering]
-    aPts <- aPts[ordering]
+    alt3_rate <- alt3_rate[ordering]
     ePld <- ePld[ordering]
-    standard_table <- standard_table[names(aPts), ]
-#    sched <- aPts - (standard_table$Pts + apm * (M_max - standard_table$Pld))
-    res <- data.frame(ePld = ePld, Rate = apm)
+    standard_table <- standard_table[names(alt3_rate), ]
+    res <- data.frame(ePld = ePld, Rate = alt3_rate)
     res <- cbind(1:nrow(res), res)
     names(res)[1] <- "rank+"
     result <- cbind(standard_table[row.names(res),], res)
@@ -113,13 +152,20 @@ alt3 <- function(league, season, results = "latest.csv",
     write.csv(result, file = outfile)
 
     require(ggplot2)
+
     plot_schedule_strengths(sched_list = sched_list, league = league,
                             season = season)
+
+    svg(file = paste0("../../_includes/leagues/", league, "/", "rates.svg"))
+    plot_rates(rates)
+    dev.off()
 
     return(result)
 }
 
-sched.s <- function(league, season, results, strengths, apm, draw_par, home_par){
+
+
+sched.s.old <- function(league, season, results, strengths, apm, draw_par, home_par){
 ##  results should be only those matches played
     dirname <- paste(league, season, "schedule-strengths", sep = "/")
     ssi <- function(i){
@@ -167,6 +213,62 @@ sched.s <- function(league, season, results, strengths, apm, draw_par, home_par)
     }
     result <- lapply(names(strengths), ssi)
     names(result) <- names(strengths)
+    result
+}
+
+sched.s <- function(league, season, results, strengths, draw_par){
+##  results should be only those matches played
+    dirname <- paste(league, season, "schedule-strengths", sep = "/")
+    ssi <- function(i){
+        results <- results[results$homeTeam == i |
+                           results$awayTeam == i, ]
+        results$HA <- "H"
+        results$HA[results$awayTeam == i] <- "A"
+        results$Pts <- 3 * (results$FTR == results$HA) + 1 * (results$FTR == "D")
+        results$GD <- (results$FTHG - results$FTAG) *
+            ((results$HA == "H") - (results$HA == "A"))
+        opponent <- ifelse(results$HA == "H",
+                           results$awayTeam,
+                           results$homeTeam)
+        s.i <- ifelse(results$HA == "H",
+                      strengths[i, "home"],
+                      strengths[i, "away"])
+        s.j <- ifelse(results$HA == "H",
+                      strengths[results$awayTeam, "away"],
+                      strengths[results$homeTeam, "home"])
+        p.iwin <- s.i
+        p.jwin <- s.j
+        p.draw <- draw_par *  (s.i * s.j) ^ (1/3)
+        denom <- p.iwin + p.jwin + p.draw
+        p.iwin <- p.iwin / denom
+        p.jwin <- p.jwin / denom
+        p.draw <- p.draw / denom
+        expected.points <- 3 * p.iwin + p.draw
+        played <- 1 - results$unplayed
+        apm <- mean(expected.points)
+        sched <-  (apm - expected.points) / apm
+        res <- data.frame(HA = results$HA,
+                   vs = opponent,
+                   played = 1 - (results $ unplayed),
+                   Pts = results $ Pts,
+                   GD = results $ GD,
+                   ePts = expected.points,
+                   sched = sched,
+                   cumulative = cumsum(sched)
+                   )
+
+        ## As a side-effect, write out a neat-ish .csv file for each team
+        res.tidied <- res
+        res.tidied $ played <- ifelse(res $ played == 1, "yes", "no")
+        res.tidied $ ePts <- sprintf("%.2f", res $ ePts)
+        res.tidied $ sched <- sprintf("%.2f", res $ sched)
+        res.tidied $ cumulative <- sprintf("%.2f", res $ cumulative)
+        write.csv(res.tidied, file = paste0(dirname, "/", i, ".csv"))
+
+        return(res)
+    }
+    result <- lapply(rownames(strengths), ssi)
+    names(result) <- rownames(strengths)
     result
 }
 
