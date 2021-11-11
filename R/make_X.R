@@ -1,5 +1,4 @@
-alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
-                 outfile = NULL, check_table = TRUE) {
+alt3 <- function(league, season, results = "latest.csv", damping_weight, consistency_weight, outfile = NULL, check_table = TRUE) {
 
     leagues <- read.csv(paste("leagues-", season, ".csv", sep = ""),
                         row.names = 1)
@@ -18,7 +17,7 @@ alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
     teamNames <- teamNames $ abbrev
     names(teamNames) <- names(longNames) <- teamId
 
-    prior_data <- make_prior_data(league, season, prior_weight)
+    prior_data <- make_prior_data(league, season, damping_weight, consistency_weight)
 
     results $ homeTeam <- teamNames[as.character(results $ homeTeamId)]
     results $ awayTeam <- teamNames[as.character(results $ awayTeamId)]
