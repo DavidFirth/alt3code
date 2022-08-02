@@ -76,13 +76,12 @@ alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
     Pts <- unlist(lapply(sched_list,
                   function(ss.i) sum(na.omit(ss.i $ Pts))
                   ))
-    Pts <- Pts - deduction
 
     GD <- unlist(lapply(sched_list,
                   function(ss.i) sum(na.omit(ss.i $ GD))
                   ))
 
-    alt3_rate <- Pts/ePld
+    alt3_rate <- Pts/ePld - deduction/nWeeks
 
     home_Pts <- unlist(lapply(sched_list,
                               function(ss.i) sum(na.omit(ss.i[ss.i$HA == "H", ] $ Pts))
@@ -93,7 +92,7 @@ alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
         sum((home_rows $ ePts) * (home_rows $ played)) / mean(home_rows $ ePts)
     }
     ))
-    home_rate <- home_Pts / home_ePld
+    home_rate <- home_Pts / home_ePld - deduction / nWeeks
 
     away_Pts <- unlist(lapply(sched_list,
                   function(ss.i) sum(na.omit(ss.i[ss.i$HA == "A", ] $ Pts))
@@ -104,12 +103,13 @@ alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
         sum((away_rows $ ePts) * (away_rows $ played)) / mean(away_rows $ ePts)
     }
     ))
-    away_rate <- away_Pts / away_ePld
+    away_rate <- away_Pts / away_ePld - deduction / nWeeks
 
     rates <- data.frame(away_rate, home_rate, alt3_rate)
 
     alt3_rate <- round(alt3_rate, 2)
     ePld <- round(ePld, 1)
+    Pts <- Pts - deduction
 
     standard_table <- read.csv(paste0(dirname, "leagueTable.csv"), as.is = TRUE)
     row.names(standard_table) <- teamNames[as.character(standard_table$teamId)]
