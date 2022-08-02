@@ -33,7 +33,7 @@ alt3 <- function(league, season, results = "latest.csv",
     ## The following is just to center the log-strengths, when that has not been done
     ## already by the prior penalty.  FAULTY!  Check it!
     ##
-    if (damping == 0){
+    if (damping == 0) {
         mean_strength <- logistic_mean(log_strengths)
         log_strengths <- log_strengths - mean_strength
         log_delta <- log_delta - 1/3 * mean_strength
@@ -101,7 +101,7 @@ alt3 <- function(league, season, results = "latest.csv",
     names(standard_table) <- c("longnames", "Pld", "GD", "Pts", "rank")
     standard_table <- standard_table[names(alt3_rate), ]
     if (check_table) {
-        if (all(not_in_play)){ # so current BBC table should agree with Pts and GD
+        if (all(not_in_play)) { # so current BBC table should agree with Pts and GD
             if (any(Pts != standard_table$Pts)) {
                 notify_me(league,
                           ":large_red_square: Points differ from official table: stopping")
@@ -147,10 +147,10 @@ alt3 <- function(league, season, results = "latest.csv",
 
 
 
-sched.s.old <- function(league, season, results, strengths, apm, draw_par, home_par){
+sched.s.old <- function(league, season, results, strengths, apm, draw_par, home_par) {
 ##  results should be only those matches played
     dirname <- paste(league, season, "schedule-strengths", sep = "/")
-    ssi <- function(i){
+    ssi <- function(i) {
         results <- results[results$homeTeam == i |
                            results$awayTeam == i, ]
         results$HA <- "H"
@@ -198,10 +198,10 @@ sched.s.old <- function(league, season, results, strengths, apm, draw_par, home_
     result
 }
 
-sched.s <- function(league, season, results, strengths, draw_par){
+sched.s <- function(league, season, results, strengths, draw_par) {
 ##  results should be only those matches played
     dirname <- paste(league, season, "schedule-strengths", sep = "/")
-    ssi <- function(i){
+    ssi <- function(i) {
         results <- results[results$homeTeam == i |
                            results$awayTeam == i, ]
         results$HA <- "H"
