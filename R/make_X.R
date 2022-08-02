@@ -1,24 +1,18 @@
-alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
-                 outfile = NULL, check_table = TRUE) {
+alt3 <- function(league, season, results = "latest.csv",
+                 damping, consistency,
+                 outfile = NULL,
+                 check_table = TRUE) {
 
-    leagues <- read.csv(paste("leagues-", season, ".csv", sep = ""),
-                        row.names = 1)
-    dirname <- paste0(league, "/", season, "/")
-    results <- read.csv(paste0(dirname, results), as.is = TRUE)
-    not_in_play <- !(results$status %in% c("IN_PLAY", "PAUSED"))
-    teamNames <- read.csv(paste0(league, "/", season, "/", "namesOfTeams.csv"),
-                          as.is = TRUE)
-    nTeams <- nrow(teamNames)
-    nWeeks <- 2 * (nTeams - 1)
-    row.names(teamNames) <- teamNames$"fdo_id"
-    deduction <- teamNames $ deduction
-    names(deduction) <- teamNames $ abbrev
-    teamId <- teamNames $ "fdo_id"
-    longNames <- teamNames $ short_name
-    teamNames <- teamNames $ abbrev
-    names(teamNames) <- names(longNames) <- teamId
+    teams_and_results <- alt3_data(league, season, results)
+    teams <- teams_and_results $ teams
+    results <- teams_and_results $ results
+    nTeams <- nrow(teams)
+    teamNames <- teams $ shortName
+    names(teamNames) <- row.names(teams)
 
-    prior_data <- make_prior_data(league, season, prior_weight)
+    prior_data <- make_prior_data(teams_and_results $ teams $ shortName,
+                                  damping, consistency)
+
 
     results $ homeTeam <- teamNames[as.character(results $ homeTeamId)]
     results $ awayTeam <- teamNames[as.character(results $ awayTeamId)]
@@ -29,41 +23,29 @@ alt3 <- function(league, season, results = "latest.csv", prior_weight = 0.01,
     names(results)[1] <- "match"
     results$FTR <- factor(results$FTR, levels = c("A", "D", "H"))
 
-    modelframe <- gnm::expandCategorical(results, "FTR", idvar = "match")
-    modelframe $ FTHG <- modelframe $ FTAG <- NULL
-    is.na(modelframe[modelframe $ unplayed, "count"]) <- TRUE
-    played <- !(modelframe $ unplayed)
-    modelframe $ unplayed <- NULL
+    fitted_params <- coef(alt3_model(teams_and_results,
+                                     damping, consistency))
+    if (is.na(fitted_params["draw"])) fitted_params["draw"] <- 0
 
-    modelframe$draw <- as.numeric(modelframe$FTR == "D")
-    modelframe$home <- ((modelframe$FTR == "H") - (modelframe$FTR == "A"))/2
-    modelframe <- rbind(prior_data, modelframe)
-    modelframe$match <- factor(modelframe$match)
+    log_strengths <- fitted_params[1:(2 * nTeams)]
+    log_delta <- fitted_params["draw"]
 
-    X <- matrix(0, nrow(modelframe), 2 * nTeams)
-    colnames(X) <- paste0(teamNames, c(rep("_home", nTeams), rep("_away", nTeams)))
-
-
-    for (team in teamNames) {
-        X[modelframe$homeTeam == team & modelframe$FTR == "H", paste0(team, "_home")] <- 1
-        X[modelframe$homeTeam == team & modelframe$FTR == "D", paste0(team, "_home")] <- 1/3
-        X[modelframe$awayTeam == team & modelframe$FTR == "A", paste0(team, "_away")] <- 1
-        X[modelframe$awayTeam == team & modelframe$FTR == "D", paste0(team, "_away")] <- 1/3
+    ## The following is just to center the log-strengths, when that has not been done
+    ## already by the prior penalty.  FAULTY!  Check it!
+    ##
+    if (damping == 0){
+        mean_strength <- logistic_mean(log_strengths)
+        log_strengths <- log_strengths - mean_strength
+        log_delta <- log_delta - 1/3 * mean_strength
     }
 
-    modelframe$s <- X
-    model <- gnm::gnm(count ~ -1 + s + draw,
-                      eliminate = match,
-                      family = quasipoisson,
-                      data = modelframe)
-    names(model$coefficients) <- c(colnames(X), "draw")
-    coefs <- coef(model)
-    delta <- exp(coefs["draw"])
-    strengths <- matrix(exp(coefs[1:(2 * nTeams)]), nTeams, 2)
+    strengths <- matrix(exp(log_strengths), nTeams, 2)
     rownames(strengths) <- teamNames
     colnames(strengths) <- c("home", "away")
 
     ## Next part assumes every team has played at least one match at home and away
+    ##
+    ## This could be relaxed, though?
     ##
     sched_list<- sched.s(league, season, results, strengths, delta)
 
