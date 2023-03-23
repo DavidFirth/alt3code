@@ -13,10 +13,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          path: code
       - name: 'setup R'
         uses: r-lib/actions/setup-r@v2
       - name: 'setup R dependencies'
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2
-          working-directory: alt3pkg
+          working-directory: code/pkg
+
+        
