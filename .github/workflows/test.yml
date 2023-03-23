@@ -32,3 +32,5 @@ jobs:
       run: R CMD INSTALL code/pkg
     - name: 'where we are'
       run: pwd
+    - name: 'show an environment variable'
+      run: echo $ALT3_SCRIPTS
