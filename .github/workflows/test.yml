@@ -39,5 +39,5 @@ jobs:
         path: data
     - name: 'where we are now'
       run: pwd
-    - name: 'what else is there'
-      run: ls ..
+    - name: 'github workspace'
+      run: echo ${{ github.workspace }}
