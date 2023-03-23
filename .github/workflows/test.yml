@@ -15,7 +15,8 @@ jobs:
       FDO_APIKEY: ${{ secrets.FDO_APIKEY }}
       ALT3_HOME: data
       ALT3_SCRIPTS: code/scripts
-      ALT3_LEAGUES_DIR: data/docs/assets/leaguessteps:
+      ALT3_LEAGUES_DIR: data/docs/assets/leagues
+    steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
