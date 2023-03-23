@@ -32,5 +32,12 @@ jobs:
       run: R CMD INSTALL code/pkg
     - name: 'where we are'
       run: pwd
-    - name: 'show an environment variable'
-      run: echo $ALT3_SCRIPTS
+    - name: Checkout tools repo
+      uses: actions/checkout@v3
+      with:
+        repository: DavidFirth/alt3
+        path: data
+    - name: 'where we are now'
+      run: pwd
+    - name: 'what else is there'
+      run: ls ..
