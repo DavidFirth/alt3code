@@ -32,4 +32,4 @@ fetch_results <- function(league, season, matchday = NULL) {
     invisible(r)
 }
 
-##  eg fetch_results("england-premier-league", api_key_file = "/data/david/work/football/api-key.txt")
+

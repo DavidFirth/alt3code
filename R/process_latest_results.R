@@ -13,8 +13,7 @@ process_latest_results <- function(league, season,
                                    json = "latest.json",
                                    csv = "latest.csv",
                                    keep = TRUE) {
-    require(jsonlite)
-    match_results <- fromJSON(paste(league, "/", season, "/", json,
+    match_results <- jsonlite::fromJSON(paste(league, "/", season, "/", json,
                                     sep = "")) $ matches
     match_results <- match_results[(match_results $ status) != "CANCELLED", ]
     ## not sure how robust the above line will be!

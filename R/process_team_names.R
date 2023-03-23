@@ -6,15 +6,13 @@
 ##' @param season
 ##' @param json
 ##' @param csv
-##' @param keep
 ##' @return
 ##' @author David Firth
 process_team_names <- function(league, season,
                                    json = "teams.json",
                                    csv = "teams.csv")
 {
-    require(jsonlite)
-    teams <- fromJSON(paste(league, "/", season, "/", json,
+    teams <- jsonlite::fromJSON(paste(league, "/", season, "/", json,
                                     sep = "")) $ teams
     spreadsheet <- data.frame(fdo_id = teams$id,
                               fdo_name = teams$name,

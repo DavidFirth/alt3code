@@ -1,4 +1,4 @@
-make_prior_data <- function(teamNames, damping, consistency){
+make_prior_data <- function(teamNames, damping, consistency) {
     nTeams <- length(teamNames)
     teamNames <- rep(teamNames, rep(2, nTeams))
     matchNames <- paste0(teamNames, rep(c("_home", "_away"), 2 * rep(nTeams, 2)))

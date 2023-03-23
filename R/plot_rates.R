@@ -1,5 +1,4 @@
-plot_rates <- function(rates){
-
+plot_rates <- function(rates) {
     ## Rates is a data frame in 3 columns, all rounded to 2 decimal places
     ## Columns are away_rate, home_rate and alt3_rate
 
@@ -16,6 +15,9 @@ plot_rates <- function(rates){
         names(nudge_y_values) <- c("zero", "three", "equal", "home_better", "away_better")
     alt3_colour <- "orange"
 
+    ## Remove teams that have not yet played both at home and away
+    rates <- na.omit(rates)
+
     ## Compute 5 groups of teams --- home record better, away record better,
     ## equal at zero points, equal at 3 per metch, and other equal
     group <- rep("equal", nrow(rates))
@@ -23,6 +25,7 @@ plot_rates <- function(rates){
     group <- ifelse(rates$alt3_rate == 3, "three", group)
     group <- ifelse(rates$home_rate > rates$away_rate, "home_better", group)
     group <- ifelse(rates$away_rate > rates$home_rate, "away_better", group)
+
     teamnames <- row.names(rates)
 
     ## Set up the plot frame

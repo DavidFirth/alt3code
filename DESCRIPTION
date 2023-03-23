@@ -1,12 +1,13 @@
 Package: alt3code
-Title: Packaged R Source Code for Updating the alt-3.uk Website
+Title: Packaged R Source Code for Updating the alt3.uk Website
 Version: 0.0.1
-Authors@R: person("David", "Firth", email = "footymath@alt-3.uk", role = c("aut", "cre"))
+Authors@R: person("David", "Firth", email = "d.firth@warwick.ac.uk", role = c("aut", "cre"))
 Description: This package collects together, with rudimentary documentation, all of 
-    the R functions that are used to populate the public website at alt-3.uk.  
+    the R functions that are used to populate the public website at alt3.uk.  
     Included are functions to download match results, to process them into an
     "alt-3" league table, and to produce a table formatted for the web.  
 Depends: R (>= 3.4.1)
+Imports: gnm, ggplot2, huxtable, jsonlite
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

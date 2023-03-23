@@ -7,11 +7,10 @@
 ##' @param csv
 ##' @return
 ##' @author David Firth
-process_league_table <- function(league, season = 2020,
+process_league_table <- function(league, season,
                                  json = "leagueTable.json",
                                  csv = "leagueTable.csv") {
-    require(jsonlite)
-    league_df <- fromJSON(paste0(league, "/", season, "/", json)) $ standings$ table
+    league_df <- jsonlite::fromJSON(paste0(league, "/", season, "/", json)) $ standings$ table
     league_df <- league_df[[1]]
     team <- as.character(league_df $ team $ name)
     teamId <- as.character(league_df $ team $ id)
@@ -23,20 +22,36 @@ process_league_table <- function(league, season = 2020,
               row.names = FALSE)
 }
 
-process_league_table_new <- function(league, season = 2020,
+##' .. content for \description{} (no empty lines) ..
+##'
+##' .. content for \details{} ..
+##' @title
+##' @param league
+##' @param html
+##' @param csv
+##' @return
+##' @author David Firth
+process_league_table_new <- function(league, season,
                                  html = "leagueTable.html",
                                  csv = "leagueTable.csv") {
     dirname <- paste0(league, "/", season)
     teams <- read.csv(paste0(dirname, "/", "namesOfTeams.csv"))
     row.names(teams) <- teams$BBC_name
     nteams <- nrow(teams)
-    system(paste0("./html-to-text.sh ", dirname, "/", html, " ",
+    system(paste0(Sys.getenv("ALT3_SCRIPTS"), "/html-to-text.sh ", dirname, "/", html, " ",
                   dirname, "/leagueTable.txt"))
-    mm <- matrix(scan(paste0(dirname, "/leagueTable.txt"),
-                      what = character(), sep = "\n",
-                      blank.lines.skip = FALSE),
-                 (1 + nteams), 10, byrow = TRUE)
-    colnames(mm) <- mm[1,]
+    mm <- scan(paste0(dirname, "/leagueTable.txt"),
+             what = character(), sep = "\n",
+             blank.lines.skip = FALSE)
+    ncols <- 10
+    if (league == "england-premier-league") {
+        mm <- c(mm, "")
+        ncols <- 11
+    }
+    mm <- matrix(mm, (1 + nteams), ncols, byrow = TRUE)
+    cn <- c("Position", "Team", "P", "W", "D", "L", "F", "A", "GD", "Pts")
+    if (ncols == 11) cn <- c(cn, "Form")
+    colnames(mm) <- cn
     mm <- mm[-1,]
     myframe <- data.frame(team = mm[, "Team"],
                           teamId = "",
