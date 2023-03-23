@@ -8,6 +8,12 @@ on:
   workflow_dispatch:
 
 jobs:
+  env:
+    SLACK_URL: ${{ secrets.SLACK_URL }}
+    FDO_APIKEY: ${{ secrets.FDO_APIKEY }}
+    ALT3_HOME: data
+    ALT3_SCRIPTS: code/scripts
+    ALT3_LEAGUES_DIR: data/docs/assets/leagues
   first-job:
     runs-on: ubuntu-latest
     steps:
@@ -23,5 +29,7 @@ jobs:
           cache-version: 2
           working-directory: code/pkg
       - name: 'install the alt3code package'
-        runs: R CMD INSTALL code/pkg
-        
+        run: R CMD INSTALL code/pkg
+      - name: 'where we are'
+        run: 
+
