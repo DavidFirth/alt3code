@@ -31,5 +31,4 @@ jobs:
       - name: 'install the alt3code package'
         run: R CMD INSTALL code/pkg
       - name: 'where we are'
-        run: 
-
+        run: pwd
