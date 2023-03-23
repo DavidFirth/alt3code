@@ -8,26 +8,25 @@ on:
   workflow_dispatch:
 
 jobs:
-  env:
-    SLACK_URL: ${{ secrets.SLACK_URL }}
-    FDO_APIKEY: ${{ secrets.FDO_APIKEY }}
-    ALT3_HOME: data
-    ALT3_SCRIPTS: code/scripts
-    ALT3_LEAGUES_DIR: data/docs/assets/leagues
   first-job:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: code
-      - name: 'setup R'
-        uses: r-lib/actions/setup-r@v2
-      - name: 'setup R dependencies'
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          cache-version: 2
-          working-directory: code/pkg
+    env:
+      SLACK_URL: ${{ secrets.SLACK_URL }}
+      FDO_APIKEY: ${{ secrets.FDO_APIKEY }}
+      ALT3_HOME: data
+      ALT3_SCRIPTS: code/scripts
+      ALT3_LEAGUES_DIR: data/docs/assets/leaguessteps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        path: code
+    - name: 'setup R'
+      uses: r-lib/actions/setup-r@v2
+    - name: 'setup R dependencies'
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        cache-version: 2
+        working-directory: code/pkg
       - name: 'install the alt3code package'
         run: R CMD INSTALL code/pkg
       - name: 'where we are'
