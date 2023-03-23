@@ -27,7 +27,7 @@ jobs:
       with:
         cache-version: 2
         working-directory: code/pkg
-      - name: 'install the alt3code package'
-        run: R CMD INSTALL code/pkg
-      - name: 'where we are'
-        run: pwd
+    - name: 'install the alt3code package'
+      run: R CMD INSTALL code/pkg
+    - name: 'where we are'
+      run: pwd
