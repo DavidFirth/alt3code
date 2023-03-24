@@ -40,7 +40,5 @@ jobs:
       run: pwd
     - name: 'github workspace'
       run: echo ${{ github.workspace }}
-    - name: 'check curl'
-      run: which curl
     - name: 'test R'
-      run: Rscript update.R italy-serie-a 2022
+      run: Rscript "$ALT3_SCRIPTS"/update.R italy-serie-a 2022
