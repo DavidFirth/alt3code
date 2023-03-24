@@ -42,4 +42,4 @@ jobs:
     - name: 'github workspace'
       run: echo ${{ github.workspace }}
     - name: 'test R'
-      run: Rscript "$ALT3_SCRIPTS"/update.R italy-serie-a 2022
+      run: bash "$ALT3_SCRIPTS"/update.sh italy-serie-a
