@@ -45,6 +45,7 @@ jobs:
       run: bash "$ALT3_SCRIPTS"/update-all.sh
     - name: 'push to github'
       run: |
+        cd $ALT3_HOME
         git config --global user.name 'DavidFirth'
         git config --global user.email 'DavidFirth@users.noreply.github.com'
         git commit -am "Automated update-all"
