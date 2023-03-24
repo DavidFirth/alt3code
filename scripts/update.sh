@@ -41,7 +41,8 @@ then
     notification="$notification\n:large_green_square: Commit $(date +"%T")"
 fi
 
-echo "$notification"
+# echo "$notification"
+echo "Sending notification to slack"
 
 curl -X POST -H 'Content-type: application/json' --data \{\"text\":\""$notification"\"\} "$SLACK_URL"
 
