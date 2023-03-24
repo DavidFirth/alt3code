@@ -37,6 +37,7 @@ jobs:
       with:
         repository: DavidFirth/alt3
         path: data
+        token: ${{ secrets.PAT }}
     - name: 'where we are now'
       run: pwd
     - name: 'github workspace'
