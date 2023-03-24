@@ -45,4 +45,8 @@ jobs:
     - name: 'test R'
       run: bash "$ALT3_SCRIPTS"/update-all.sh
     - name: 'push to github'
-      run: Rscript "$ALT3_SCRIPTS"/push.R
+      run: |
+        git config --global user.name 'DavidFirth'
+        git config --global user.email 'DavidFirth@users.noreply.github.com'
+        git commit -am "Automated update-all"
+        git push
