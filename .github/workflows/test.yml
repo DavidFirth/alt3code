@@ -16,6 +16,7 @@ jobs:
       ALT3_HOME: data
       ALT3_SCRIPTS: code/scripts
       ALT3_LEAGUES_DIR: data/docs/assets/leagues
+      ALT3_CURRENT_SEASON: 2022
     steps:
     - name: Checkout
       uses: actions/checkout@v3
