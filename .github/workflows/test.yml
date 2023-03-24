@@ -32,12 +32,11 @@ jobs:
         working-directory: code/pkg
     - name: 'where we are'
       run: pwd
-    - name: Checkout tools repo
+    - name: Checkout alt3 repo
       uses: actions/checkout@v3
       with:
         repository: DavidFirth/alt3
         path: data
-        token: ${{ secrets.PAT }}
     - name: 'where we are now'
       run: pwd
     - name: 'github workspace'
