@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 ## Usage: e.g.,
-##   Rscript schedule.R spain-la-liga-primera 2021
+##   Rscript update.R spain-la-liga-primera 2021
 
 args <-  commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) stop("two arguments needed, league and season")
