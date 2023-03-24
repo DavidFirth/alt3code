@@ -13,10 +13,10 @@ jobs:
     env:
       SLACK_URL: ${{ secrets.SLACK_URL }}
       FDO_APIKEY: ${{ secrets.FDO_APIKEY }}
-      ALT3_HOME: data
-      ALT3_CODE: code/pkg
-      ALT3_SCRIPTS: code/scripts
-      ALT3_LEAGUES_DIR: data/docs/assets/leagues
+      ALT3_HOME: ${{ github.workspace }}/data
+      ALT3_CODE: ${{ github.workspace }}/code/pkg
+      ALT3_SCRIPTS: ${{ github.workspace }}/code/scripts
+      ALT3_LEAGUES_DIR: ${{ github.workspace }}/data/docs/assets/leagues
       ALT3_CURRENT_SEASON: 2022
     steps:
     - name: Checkout
