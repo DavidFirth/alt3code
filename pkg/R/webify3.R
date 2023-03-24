@@ -88,7 +88,7 @@ webify3 <- function(league, season) {
     huxtable::text_color(ht)[1, 8] <- "#000055"
     huxtable::background_color(ht)[1, 8:10] <- "#ffa74d"
     huxtable::background_color(ht)[3:nrow(ht), 7] <- "#000055"
-    huxtable::ht <- set_col_width(ht, 7, "20px")
+    ht <- huxtable::set_col_width(ht, 7, "20px")
     huxtable::background_color(ht)[2, ] <- "#000055"  ## a grey column-header line
     huxtable::text_color(ht)[2, 3] <- "#ffffff"
     huxtable::text_color(ht)[2, 3:4] <- "#aaaaaa"
@@ -96,7 +96,7 @@ webify3 <- function(league, season) {
     huxtable::background_color(ht)[3:nrow(ht), 3:6] <- "gainsboro"
     huxtable::text_color(ht)[3:nrow(ht), 3:6] <- "#666666"
 
-    ht <- huxtable::set_bottom_border(ht, nrow(ht), everywhere, 4)
+    ht <- huxtable::set_bottom_border(ht, nrow(ht), huxtable::everywhere, 4)
     ht <- huxtable::set_bottom_border_color(ht, nrow(ht), c(1:6, 8:10), "lightgrey")
     ht <- huxtable::set_bottom_border_color(ht, nrow(ht), 7, "#000055")
     ht <- huxtable::set_bottom_border(ht, c(3:(nrow(ht) - 1)), c(1:6, 8:10), 2)
@@ -104,7 +104,7 @@ webify3 <- function(league, season) {
     ht <- huxtable::set_bottom_border_color(ht, c(3:(nrow(ht) - 1)), 3:6, "#cccccc")
     ht <- huxtable::set_bottom_border_color(ht, c(2:(nrow(ht) - 1)), 7, "#000055")
     ht <- huxtable::set_bottom_border_color(ht, c(3:(nrow(ht) - 1)), c(1:2, 8:10), "#ffa74d")
-    ht <- huxtable::set_bottom_border(ht, 1, everywhere, 2)
+    ht <- huxtable::set_bottom_border(ht, 1, huxtable::everywhere, 2)
     ht <- huxtable::set_bottom_border_color(ht, 1, 3:6, "gainsboro")
     ht <- huxtable::set_bottom_border_color(ht, 1, 8:10, "#ffa74d")
     ht <- huxtable::set_bottom_border_color(ht, 1, c(1:2, 7), "#ffffff")
@@ -119,7 +119,7 @@ webify3 <- function(league, season) {
                         )
 
     ht$V9 <- gsub("minus0.0", "0.0", ht$V9)
-    html <- to_html(ht)
+    html <- huxtable::to_html(ht)
     html <- gsub("margin-top: 2em", "margin-top: 1em", html)
     html <- gsub("margin-bottom: 2em", "margin-bottom: 0em", html)
     html <- gsub("minus", "&minus;", html)

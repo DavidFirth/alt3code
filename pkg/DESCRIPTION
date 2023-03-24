@@ -7,7 +7,7 @@ Description: This package collects together, with rudimentary documentation, all
     Included are functions to download match results, to process them into an
     "alt-3" league table, and to produce a table formatted for the web.  
 Depends: R (>= 3.4.1)
-Imports: gnm, ggplot2, huxtable, jsonlite
+Imports: devtools, gnm, ggplot2, huxtable, jsonlite
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
