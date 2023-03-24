@@ -29,8 +29,6 @@ jobs:
       with:
         cache-version: 2
         working-directory: code/pkg
-    - name: 'install the alt3code package'
-      run: R CMD INSTALL code/pkg
     - name: 'where we are'
       run: pwd
     - name: Checkout tools repo
@@ -42,3 +40,7 @@ jobs:
       run: pwd
     - name: 'github workspace'
       run: echo ${{ github.workspace }}
+    - name: 'check curl'
+      run: which curl
+    - name: 'test R'
+      run: Rscript update.R italy-serie-a 2022
