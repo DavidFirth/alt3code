@@ -49,7 +49,6 @@ curl -X POST -H 'Content-type: application/json' --data \{\"text\":\""$notificat
 echo "
 "
 
-## Still need to push the commits up to alt3 on github
 exit 0 
 
 
