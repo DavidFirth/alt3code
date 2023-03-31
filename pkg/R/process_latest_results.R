@@ -28,8 +28,8 @@ process_latest_results <- function(league, season,
     homeTeamId <- match_results $ homeTeam $ id
     awayTeamName <- match_results $ awayTeam $ name
     awayTeamId <- match_results $ awayTeam $ id
-    FTHG <- scores $ homeTeam
-    FTAG <- scores $ awayTeam
+    FTHG <- scores $ home
+    FTAG <- scores $ away
     spreadsheet <- data.frame(matchday = matchday,
                               homeTeamName = homeTeamName,
                               homeTeamId = homeTeamId,

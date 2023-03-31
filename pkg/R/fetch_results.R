@@ -19,7 +19,7 @@ fetch_results <- function(league, season, matchday = NULL) {
     api_key <- Sys.getenv("FDO_APIKEY")
     key_header <- paste("-H 'X-Auth-Token: ", api_key, "' ", sep = "")
 
-    url_header <- paste("-X GET http://api.football-data.org/v2/competitions/",
+    url_header <- paste("-X GET http://api.football-data.org/v4/competitions/",
                         league_id, "/matches", matchday_query, sep = "")
     curl_args <- paste("-H 'X-Response-Control: minified' ", key_header, url_header,
                        sep = "")
