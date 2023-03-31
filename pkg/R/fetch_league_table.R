@@ -26,7 +26,7 @@ fetch_league_table <- function(league, season, matchday = NULL, source = "BBC"){
         api_key <- Sys.getenv("FDO_APIKEY")
         key_header <- paste("-H 'X-Auth-Token: ", api_key, "' ", sep = "")
 
-        url_header <- paste("-X GET http://api.football-data.org/v2/competitions/",
+        url_header <- paste("-X GET http://api.football-data.org/v4/competitions/",
                             league_id, "/standings", matchday_query, sep = "")
         curl_args <- paste("-H 'X-Response-Control: minified' ", key_header,
                            url_header,
