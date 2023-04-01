@@ -14,6 +14,8 @@ Rscript "$ALT3_SCRIPTS"/update.R $league $ALT3_CURRENT_SEASON
 
 #add, commit and push files
 
+git config --global user.name 'DavidFirth'
+git config --global user.email 'DavidFirth@users.noreply.github.com'
 gitstatus=$(git status --porcelain)
 
 newresults=""
