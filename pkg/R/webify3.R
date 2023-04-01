@@ -110,7 +110,7 @@ webify3 <- function(league, season) {
     ht <- huxtable::set_bottom_border_color(ht, 1, c(1:2, 7), "#ffffff")
 
     timestamp <- paste0('<p style=\"font-size: 80%;\"><i>Table written: ',
-                        format(Sys.time(),
+                        format(Sys.time() + 3600,
                                "%A %d %B %Y at %X"),
                         " (London time)</i> <br>",
                         "If this looks out of date, please try ",
