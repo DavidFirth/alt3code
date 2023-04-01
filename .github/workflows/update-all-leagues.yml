@@ -16,7 +16,7 @@ jobs:
       ALT3_HOME: ${{ github.workspace }}/data
       ALT3_CODE: ${{ github.workspace }}/code/pkg
       ALT3_SCRIPTS: ${{ github.workspace }}/code/scripts
-      ALT3_LEAGUES_DIR: ${{ github.workspace }}/data/docs/assets/leagues
+      ALT3_LEAGUES_DIR: ${{ github.workspace }}/data/docs/assets/leagues/
       ALT3_CURRENT_SEASON: 2022
     steps:
     - name: Checkout
