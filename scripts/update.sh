@@ -35,6 +35,7 @@ fi
 
 if [ -n "$newresults" ]
 then
+    echo 'New results are in '$newresults
     git add "$newresults"
     git commit -m "Update $league after $matches" --only $(echo "$gitstatus" | grep "$league" | sed 's/.* //')
     echo "Done updating $league"
