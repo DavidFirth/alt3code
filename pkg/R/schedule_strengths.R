@@ -81,30 +81,28 @@ plot_schedule_strengths <- function(league, season, sched_list) {
             annotate("text", label = "Away matches in red",
                      x = -scalemax + 0.05, y = -1.2, size = 3, fontface = "italic",
                      colour = "#880000", hjust = 0) +
-                                        # scale_color_hue(l = 40, c = 35) +
-            ## not sure why scale_color_hue was used
-            ## -- it seems to clash with scale_color_manual below, in any case
-            ## so I am commenting it out now (Dec 2019)
             geom_label(aes(x = 0, y = -0.1, label = "Start of season"),
                        fill = "white") +
-            geom_label(aes(x = 0, y = nweeks + 1.1, label = "End of season"),
+            geom_label(aes(x = 0, y = nweeks + 1.1,
+                           label = "End of season"),
                        fill = "white") +
             geom_label(aes(x = 0, y = (nteams - 0.5), label = "Halfway"),
                        color = "grey", fill = "white") +
             geom_hline(yintercept = -0.1, linetype = "solid",
-                color = "black", size = 1) +
+                       color = "black", size = 1) +
             geom_hline(yintercept = nweeks + 1.1, linetype = "solid",
-                color = "black", size = 1) +
+                       color = "black", size = 1) +
             annotate("text", label = "dot",
                      x = 0, y = nweeks + 1.4, size = 1,
                      colour = "#880000") +
             geom_hline(yintercept = nteams - 0.5, linetype = "dashed",
-                color = "grey", size = 1)
+                       color = "grey", size = 1)
         if (plot_the_now_line) {
             the_plot <- the_plot +
                 geom_label(aes(x = 0, y = 0.5 + n_played, label = "Now"),
                            color = "darkgrey", fill = "white") +
-                geom_hline(yintercept = 0.5 + n_played, linetype = "dashed",
+                geom_hline(yintercept = 0.5 + n_played,
+                           linetype = "dashed",
                            color = "green", size = 1)
         }
         the_plot <- the_plot +
@@ -114,9 +112,9 @@ plot_schedule_strengths <- function(league, season, sched_list) {
             theme(axis.title.y = element_blank(),
                   axis.text.y = element_blank(),
                   axis.ticks.y = element_blank(),
-                  axis.title.x = element_text(color = "darkgrey", size = 10)) +
-            scale_x_continuous(position = "top",
-                               limits = c(-scalemax, scalemax)) +
+                  axis.title.x = element_text(color = "darkgrey",
+                                                                 size = 10)) +
+            scale_x_continuous(position = "top", limits = c(-scalemax, scalemax)) +
             labs(title = team_fullname,
                  subtitle = "Schedule strength (cumulative)",
                  x = " <<<< easier <<<<            >>>> harder >>>>") +
@@ -124,15 +122,14 @@ plot_schedule_strengths <- function(league, season, sched_list) {
                   plot.margin = margin(0, 0, 0, 0, "cm"))
         the_plot $ layers = rev(the_plot $ layers)
         the_plot <- the_plot +
-            scale_color_manual(values=c("#880000", "#000088"))
-        the_plot <- the_plot + theme(
-                                   panel.grid.major.y = element_blank(),
-                                   panel.grid.minor.y = element_blank()
-                               )
+            scale_color_manual(values=c("#880000", "#000088")) +
+            theme(
+                panel.grid.major.y = element_blank(),
+                panel.grid.minor.y = element_blank()
+            )
         print(the_plot)
         dev.off()
     }
-
     for (team in names(sched_list)) {
         sched <- sched_list[[team]]
         plot_sched(sched, team)

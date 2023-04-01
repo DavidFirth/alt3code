@@ -4,11 +4,8 @@ alt3 <- function(league, season, results = "latest.csv",
                  check_table = TRUE) {
     dirname <- paste0(league, "/", season, "/")
     teams_and_results <- alt3_data(league, season, results)
-cat("Finished alt3_data")
     teams <- teams_and_results $ teams
     results <- teams_and_results $ results
-print(teams)
-print(results)
     not_in_play <- !(results$status %in% c("IN_PLAY", "PAUSED"))
     nTeams <- nrow(teams)
     nWeeks <- 2 * (nTeams - 1)

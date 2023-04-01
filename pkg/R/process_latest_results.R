@@ -14,13 +14,10 @@ process_latest_results <- function(league, season,
                                    csv = "latest.csv",
                                    keep = TRUE) {
     match_results <- jsonlite::fromJSON(paste(league, "/", season, "/", json,
-                                    sep = "")) $ matches
-    match_results <- match_results[(match_results $ status) != "CANCELLED", ]
-    ## not sure how robust the above line will be!
+                                              sep = "")) $ matches
     scores <- match_results $ score $ fullTime
     finished <- (match_results $ status) %in% c("FINISHED", "AWARDED")
-    postponed <- (match_results $ status) == "POSTPONED"
-    cancelled <- (match_results $ status) == "CANCELLED"
+    postponed <- (match_results $ status) %in% c("POSTPONED", "CANCELLED")
     matchday <- match_results $ matchday
     date <- substr(match_results$utcDate, 1, 10)
     UTCtime <- substr(match_results$utcDate, 12, 19)
@@ -30,6 +27,8 @@ process_latest_results <- function(league, season,
     awayTeamId <- match_results $ awayTeam $ id
     FTHG <- scores $ home
     FTAG <- scores $ away
+    is.na(FTHG[postponed, ]) <- TRUE
+    is.na(FTAG[postponed, ]) <- TRUE
     spreadsheet <- data.frame(matchday = matchday,
                               homeTeamName = homeTeamName,
                               homeTeamId = homeTeamId,
