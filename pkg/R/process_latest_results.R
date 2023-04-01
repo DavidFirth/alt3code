@@ -27,8 +27,8 @@ process_latest_results <- function(league, season,
     awayTeamId <- match_results $ awayTeam $ id
     FTHG <- scores $ home
     FTAG <- scores $ away
-    is.na(FTHG[postponed, ]) <- TRUE
-    is.na(FTAG[postponed, ]) <- TRUE
+    is.na(FTHG[postponed]) <- TRUE
+    is.na(FTAG[postponed]) <- TRUE
     spreadsheet <- data.frame(matchday = matchday,
                               homeTeamName = homeTeamName,
                               homeTeamId = homeTeamId,
