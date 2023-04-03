@@ -5,7 +5,8 @@ cd "$ALT3_HOME"
 league=$1
 export league
 
-notification="*$league*\n:large_blue_square: Starting an update run $(date +"%T")\n"
+# notification="*$league*\n:large_blue_square: Starting an update run $(date +"%T")\n"
+# Disabled the above, it's a distraction
 
 # git pull origin master
 # April 2021, try working without the automated pull, to avoid clashes

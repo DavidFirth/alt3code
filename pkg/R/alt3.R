@@ -118,23 +118,18 @@ alt3 <- function(league, season, results = "latest.csv",
     names(standard_table) <- c("longnames", "Pld", "GD", "Pts", "rank")
     standard_table <- standard_table[names(alt3_rate), ]
     if (check_table) {
-        if (all(not_in_play)) { # so current BBC table should agree with Pts and GD
-            if (any(Pts != standard_table$Pts)) {
-                notify_me(league,
-                          ":large_red_square: Points differ from official table: stopping")
-                stop("Points totals differ!")
-            }
-            if (any(GD != standard_table$GD)) {
-                notify_me(league,
-                          ":large_red_square: GD differs from official table: continuing")
+        if (any(Pts != standard_table$Pts)) {
+            notify_me(league,
+                      ":large_red_square: Points differ from official table: stopping")
+            stop("Points totals differ!")
+        }
+        if (any(GD != standard_table$GD)) {
+            notify_me(league,
+                      ":large_red_square: GD differs from official table: continuing")
                                         # stop("Goal differences differ!")
                                         #
                                         # previous line commented because it's unclear
                                         # what to do about incorrect BBC table
-            }
-        } else { ## at least one match is still in play
-            notify_me(league, ":large_red_square: Still in play: stopping")
-            stop("At least one match is still in play")
         }
     }
 

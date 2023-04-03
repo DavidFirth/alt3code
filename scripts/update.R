@@ -16,14 +16,19 @@ notify_me <- slack
 
 setwd(paste0(Sys.getenv("ALT3_HOME"), "/docs/assets/leagues"))
 
-fetch_results(league, season)
-results <- process_latest_results(league = league, season)
+fetch_results(league = league, season = season)
+results <- process_latest_results(league = league, season = season)
+## That should always write a 'latest.csv' file
+## Value of 'results' will be NULL if there are no new results
 
 if (!is.null(results)) {
-    fetch_league_table(league, season,
-                       source = "BBC")
+    if (match_in_play(league, season)) {
+        notify_me(league, ":large_red_square: Still in play: alt3 table not updated")
+    } else {
+    fetch_league_table(league, season, source = "BBC")
     process_league_table_new(league, season)
     make_sched_strength_pages(league, season)
     temp <- alt3(league, damping = 0.5, consistency = 0.5, season = season)
     webify3(league, season)
+    }
 }
