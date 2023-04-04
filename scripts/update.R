@@ -28,7 +28,7 @@ if (!is.null(results)) {
     fetch_league_table(league, season, source = "BBC")
     process_league_table_new(league, season)
     make_sched_strength_pages(league, season)
-    temp <- alt3(league, damping = 0.5, consistency = 0.5, season = season)
+    temp <- alt3(league, damping = 0, consistency = 0.5, season = season)
     webify3(league, season)
     }
 }
