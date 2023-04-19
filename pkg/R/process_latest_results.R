@@ -58,6 +58,16 @@ process_latest_results <- function(league, season,
         spreadsheet <- spreadsheet[c(results_and_scheduled, unscheduled_postponements), ]
         row.names(spreadsheet) <- 1:n_rows
     }
+## Next check for duplicate rows, as can happen after a match becomes CANCELLED
+## and is subsequently re-scheduled.  (eg, Rotherham vs Cardiff in March 2023)
+    match <- paste(spreadsheet $ homeTeamName, spreadsheet $ awayTeamName, sep = " vs ")
+## Now delete any duplicated entry(ies), which should be a CANCELLED row
+    if (any(duplicated(match))) {
+        index_of_duplicate <- anyDuplicated(match)
+        if (all(spreadsheet[index_of_duplicate, ] $ status == "CANCELLED")) {
+            spreadsheet <- spreadsheet[-(index_of_duplicate), ]
+        }
+    }
 ## Write the spreadsheet to disk
     write.csv(spreadsheet, paste(league, "/", season, "/", csv, sep = ""),
               row.names = FALSE)
