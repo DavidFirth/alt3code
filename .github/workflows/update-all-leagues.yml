@@ -9,7 +9,7 @@ on:
 
 jobs:
   job-to-update-all-leagues:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       SLACK_URL: ${{ secrets.SLACK_URL }}
       FDO_APIKEY: ${{ secrets.FDO_APIKEY }}
