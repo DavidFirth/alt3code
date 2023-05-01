@@ -5,7 +5,7 @@ name: 'Update all leagues'
 on:
   workflow_dispatch:
   schedule:
-    - cron: "49 00 * * *"
+    - cron: "49 23 * * *"
 
 jobs:
   job-to-update-all-leagues:
