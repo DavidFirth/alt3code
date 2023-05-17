@@ -2,10 +2,14 @@ name: 'Update all leagues'
 
 # **What it does**: Updates the alt3.uk website daily.
 
+## This works OK, but it uses random IP addresses for its calls to the
+## football-data.org API, which is a problem.  So, for now at least, I am
+## not going to be using this Action.
+
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "49 22 * * *"
+##  schedule:
+##    - cron: "49 22 * * *"
 
 jobs:
   job-to-update-all-leagues:
