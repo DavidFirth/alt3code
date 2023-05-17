@@ -7,7 +7,7 @@ name: 'Update all leagues'
 ## not going to be using this Action.
 
 on:
-  workflow_dispatch:
+##  workflow_dispatch:
 ##  schedule:
 ##    - cron: "49 22 * * *"
 
