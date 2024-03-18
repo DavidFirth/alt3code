@@ -27,4 +27,4 @@ fetch_teams <- function(league, season) {
     invisible(r)
 }
 
-##  eg fetch_teams("england-championship", api_key_file = "/data/david/work/football/api-key.txt")
+

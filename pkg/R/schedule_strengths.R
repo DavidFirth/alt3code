@@ -81,12 +81,11 @@ plot_schedule_strengths <- function(league, season, sched_list) {
             annotate("text", label = "Away matches in red",
                      x = -scalemax + 0.05, y = -1.2, size = 3, fontface = "italic",
                      colour = "#880000", hjust = 0) +
-            geom_label(aes(x = 0, y = -0.1, label = "Start of season"),
-                       fill = "white") +
-            geom_label(aes(x = 0, y = nweeks + 1.1,
-                           label = "End of season"),
-                       fill = "white") +
-            geom_label(aes(x = 0, y = (nteams - 0.5), label = "Halfway"),
+            annotate("label", x = 0, y = -0.1, label = "Start of season",
+                     fill = "white") +
+            annotate("label", x = 0, y = nweeks + 1.1, label = "End of season",
+                     fill = "white") +
+            annotate("label", x = 0, y = (nteams - 0.5), label = "Halfway",
                        color = "grey", fill = "white") +
             geom_hline(yintercept = -0.1, linetype = "solid",
                        color = "black", size = 1) +
@@ -99,8 +98,8 @@ plot_schedule_strengths <- function(league, season, sched_list) {
                        color = "grey", size = 1)
         if (plot_the_now_line) {
             the_plot <- the_plot +
-                geom_label(aes(x = 0, y = 0.5 + n_played, label = "Now"),
-                           color = "darkgrey", fill = "white") +
+                annotate("label", x = 0, y = 0.5 + n_played, label = "Now",
+                         color = "darkgrey", fill = "white") +
                 geom_hline(yintercept = 0.5 + n_played,
                            linetype = "dashed",
                            color = "green", size = 1)
@@ -155,5 +154,6 @@ make_sched_strength_pages <- function(league, season) {
         tx5 <- gsub(pattern = "theseason", replace = season, x = tx4)
         writeLines(tx5, con = paste0(dirname, "/schedule-strengths/",
                                      abbrev[i], ".md"))
+#        writeLines(tx5, con = paste0("../../_pages/leagues/", abbrev[i], ".md"))
     }
 }

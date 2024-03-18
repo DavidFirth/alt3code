@@ -44,7 +44,8 @@ process_league_table_new <- function(league, season,
              what = character(), sep = "\n",
              blank.lines.skip = FALSE)
     ncols <- 10
-    if (league == "england-premier-league") {
+    if (league %in% c("england-premier-league", "netherlands-eredivisie",
+                      "portugal-primeira-liga")) {
         mm <- c(mm, "")
         ncols <- 11
     }

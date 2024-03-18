@@ -6,8 +6,8 @@ plot_rates <- function(rates) {
     colour_values = c("black", "black", "black", "blue", "red")
     hjust_values <- c(0.3, 0.3, 0.3, 0.7, 0.3)
     vjust_values <- c(0.5, 0.5, 0.5, 0.3, 0.7)
-    nudge_x_values <- c(0.03, -0.03, -0.03, -0.03, 0.03)
-    nudge_y_values <- c(0.03, -0.03,  0.03,  0.03, -0.03)
+    nudge_x_values <- c(0.03, -0.03, -0.03, 0.01, -0.01)
+    nudge_y_values <- c(0.03, -0.03,  0.03, 0, 0)
     names(colour_values) <-
         names(hjust_values) <-
         names(vjust_values) <-
@@ -137,7 +137,8 @@ plot_rates <- function(rates) {
                  size = 3,
                  force_pull = 10,
                  force = 0.1,
-                 box.padding = 0.07)
+                 box.padding = 0.15
+                 )
     g <- g + ggplot2::geom_segment(ggplot2::aes(x = away_rate,
                                        y = home_rate,
                                        xend = alt3_rate,
