@@ -1,4 +1,5 @@
 england-premier-league
+england-championship
 germany-bundesliga-1
 france-ligue-1
 italy-serie-a

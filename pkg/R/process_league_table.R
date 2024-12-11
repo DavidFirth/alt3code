@@ -19,14 +19,14 @@ process_league_table_new <- function(league, season,
     mm <- scan(paste0(dirname, "/leagueTable.txt"),
              what = character(), sep = "\n",
              blank.lines.skip = FALSE)
-    if (league == "germany-bundesliga-1"){
+    if (league == "germany-bbundesliga-1"){
         ncols <- 12
     } else {
         mm <- c(mm, "")  ## this is a fudge to cover inadequacy of my shell script
         ncols <- 11
     }
     mm <- matrix(mm, (1 + nteams), ncols, byrow = TRUE)
-    if (league == "germany-bundesliga-1") {
+    if (league == "germany-bbundesliga-1") {
         mm <- mm[, -2]
     }
     cn <- c("Position", "Team", "P", "W", "D", "L", "F", "A", "GD", "Pts", "Form")
