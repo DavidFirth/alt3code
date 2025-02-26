@@ -2,6 +2,8 @@
 #
 ## For daily update of alt-3 locally, not in github actions
 ##
+source ~/alt3-environment.sh
+
 cd $ALT3_HOME
 git pull origin master
 cd $ALT3_CODE/..

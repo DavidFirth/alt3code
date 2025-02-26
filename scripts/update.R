@@ -22,7 +22,7 @@ results <- process_latest_results(league = league, season = season)
 ## Value of 'results' will be NULL if there are no new results
 
 if (!is.null(results)) {
-    if (match_in_play(league, season)) {
+    if (FALSE) { # (match_in_play(league, season)) {
         notify_me(league, ":large_red_square: Still in play: alt3 table not updated")
     } else {
     fetch_league_table(league, season, source = "BBC")

@@ -1,7 +1,7 @@
 england-premier-league
 england-championship
-germany-bundesliga-1
 france-ligue-1
+germany-bundesliga-1
 italy-serie-a
 netherlands-eredivisie
 portugal-primeira-liga

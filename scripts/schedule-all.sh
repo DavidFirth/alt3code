@@ -1,4 +1,5 @@
 #!/bin/bash
+source ~/alt3-environment.sh
 rm -rf "$ALT3_SCRIPTS"/push-times-today.txt
 while IFS= read -r league
 do

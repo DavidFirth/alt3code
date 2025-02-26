@@ -1,5 +1,6 @@
 #!/bin/bash
 ## This script works in the up-to-date alt3 repository
+source ~/alt3-environment.sh
 cd "$ALT3_HOME"
 
 league=$1
