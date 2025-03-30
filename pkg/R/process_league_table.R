@@ -19,19 +19,15 @@ process_league_table_new <- function(league, season,
     mm <- scan(paste0(dirname, "/leagueTable.txt"),
              what = character(), sep = "\n",
              blank.lines.skip = FALSE)
-    if (league == "germany-bbundesliga-1"){
-        ncols <- 12
-    } else {
-        mm <- c(mm, "")  ## this is a fudge to cover inadequacy of my shell script
-        ncols <- 11
-    }
+
+    mm <- c(mm, "")  ## this is a fudge to cover inadequacy of my shell script
+    ncols <- 10
     mm <- matrix(mm, (1 + nteams), ncols, byrow = TRUE)
-    if (league == "germany-bbundesliga-1") {
-        mm <- mm[, -2]
-    }
+    mm <- mm[-1,]
+    mm <- cbind(as.character(1:nteams), mm)
     cn <- c("Position", "Team", "P", "W", "D", "L", "F", "A", "GD", "Pts", "Form")
     colnames(mm) <- cn
-    mm <- mm[-1,]
+    mm[, "Team"] <- sub("[0-9]*", "", mm[, "Team"])
     myframe <- data.frame(team = mm[, "Team"],
                           teamId = "",
                           playedGames = as.numeric(mm[, "P"]),
