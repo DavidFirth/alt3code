@@ -121,6 +121,7 @@ alt3 <- function(league, season, results = "latest.csv",
         if (any(Pts != standard_table$Pts)) {
             notify_me(league,
                       ":large_red_square: Points differ from official table: stopping")
+            browser()
             stop("Points totals differ!")
         }
         if (any(GD != standard_table$GD)) {

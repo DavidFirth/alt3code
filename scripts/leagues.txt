@@ -1,8 +1,2 @@
-england-premier-league
 england-championship
-france-ligue-1
-germany-bundesliga-1
-italy-serie-a
-netherlands-eredivisie
-portugal-primeira-liga
-spain-la-liga-primera
+england-premier-league
