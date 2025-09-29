@@ -5,4 +5,4 @@ germany-bundesliga-1
 italy-serie-a
 netherlands-eredivisie
 portugal-primeira-liga
-spain-la-liga-1
+spain-la-liga-primera
