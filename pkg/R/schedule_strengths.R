@@ -88,25 +88,25 @@ plot_schedule_strengths <- function(league, season, sched_list) {
             annotate("label", x = 0, y = (nteams - 0.5), label = "Halfway",
                        color = "grey", fill = "white") +
             geom_hline(yintercept = -0.1, linetype = "solid",
-                       color = "black", size = 1) +
+                       color = "black", linewidth = 1) +
             geom_hline(yintercept = nweeks + 1.1, linetype = "solid",
-                       color = "black", size = 1) +
+                       color = "black", linewidth = 1) +
             annotate("text", label = "dot",
                      x = 0, y = nweeks + 1.4, size = 1,
                      colour = "#880000") +
             geom_hline(yintercept = nteams - 0.5, linetype = "dashed",
-                       color = "grey", size = 1)
+                       color = "grey", linewidth = 1)
         if (plot_the_now_line) {
             the_plot <- the_plot +
                 annotate("label", x = 0, y = 0.5 + n_played, label = "Now",
                          color = "darkgrey", fill = "white") +
                 geom_hline(yintercept = 0.5 + n_played,
                            linetype = "dashed",
-                           color = "green", size = 1)
+                           color = "green", linewidth = 1)
         }
         the_plot <- the_plot +
             geom_vline(xintercept = 0, linetype = "dashed",
-                       color = "grey", size = 1) +
+                       color = "grey", linewidth = 1) +
             scale_y_reverse(expand = c(0, 0.7)) +
             theme(axis.title.y = element_blank(),
                   axis.text.y = element_blank(),

@@ -56,8 +56,9 @@ plot_rates <- function(rates) {
 
     ## Draw the alt-3 centre line and its associated labels
     g <- g + ggplot2::geom_segment(data = rates,
-                                   mapping = ggplot2::aes(x = 0, y = 0, xend = 3, yend = 3),
-                                   size = 1,
+                                   mapping = ggplot2::aes(x = 0, y = 0,
+                                                          xend = 3, yend = 3),
+                                   linewidth = 1,
                                    color = alt3_colour)
     g <- g + ggplot2::geom_point(x = -0.075,
                                  y = -0.075,
